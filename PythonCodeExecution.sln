@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32616.157
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PythonCodeExecutionIronPython", "PythonCodeExecution\PythonCodeExecutionIronPython.csproj", "{3B4E1D7F-C80E-441A-983E-843AC4463F74}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PythonCodeExecutionIronPython.Tests", "PythonCodeExecutionTests\PythonCodeExecutionIronPython.Tests.csproj", "{08AEC969-66EE-444D-A64E-8EA0F50B62A2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PythonCodeExecutionPythonDotNet", "PythonCodeExecutionPythonDotNet\PythonCodeExecutionPythonDotNet.csproj", "{17F09DAE-DA75-43B3-90CC-AB43055FF180}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PythonCodeExecutionPythonDotNet.Tests", "PythonCodeExecutionPythonDotNet.Tests\PythonCodeExecutionPythonDotNet.Tests.csproj", "{4A7CF5A9-0AA6-446F-BCF3-9593F49277F1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleLibrary", "ExampleLibrary\ExampleLibrary.csproj", "{B4B2FFDC-D7DD-4F34-925B-331E4F43D820}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3B4E1D7F-C80E-441A-983E-843AC4463F74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B4E1D7F-C80E-441A-983E-843AC4463F74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B4E1D7F-C80E-441A-983E-843AC4463F74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B4E1D7F-C80E-441A-983E-843AC4463F74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08AEC969-66EE-444D-A64E-8EA0F50B62A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08AEC969-66EE-444D-A64E-8EA0F50B62A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08AEC969-66EE-444D-A64E-8EA0F50B62A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08AEC969-66EE-444D-A64E-8EA0F50B62A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17F09DAE-DA75-43B3-90CC-AB43055FF180}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17F09DAE-DA75-43B3-90CC-AB43055FF180}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17F09DAE-DA75-43B3-90CC-AB43055FF180}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17F09DAE-DA75-43B3-90CC-AB43055FF180}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A7CF5A9-0AA6-446F-BCF3-9593F49277F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A7CF5A9-0AA6-446F-BCF3-9593F49277F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A7CF5A9-0AA6-446F-BCF3-9593F49277F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A7CF5A9-0AA6-446F-BCF3-9593F49277F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4B2FFDC-D7DD-4F34-925B-331E4F43D820}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4B2FFDC-D7DD-4F34-925B-331E4F43D820}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4B2FFDC-D7DD-4F34-925B-331E4F43D820}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4B2FFDC-D7DD-4F34-925B-331E4F43D820}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A9920CC4-3E24-45FA-9131-42515625DB16}
+	EndGlobalSection
+EndGlobal
