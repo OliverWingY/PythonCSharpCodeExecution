@@ -8,8 +8,12 @@
 	  
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="QuantConnect.pythonnet" Version="2.0.16" />
+    <PackageReference Include="CSharpFunctionalExtensions" Version="2.31.0" />
+	<PackageReference Include="pythonnet" Version="3.0.0-rc3" />
 	  
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ExampleLibrary\ExampleLibrary.csproj" />
   </ItemGroup>
 
 </Project>

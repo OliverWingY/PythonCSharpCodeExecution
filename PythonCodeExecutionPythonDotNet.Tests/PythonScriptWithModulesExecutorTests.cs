@@ -1,9 +1,12 @@
 using Xunit;
 using PythonCodeExecutionPythonDotNet;
+using Python.Runtime;
 using ExampleLibrary;
 using FluentAssertions;
+using System.Linq;
+using System.Collections.Generic;
 
-namespace PythonCodeExecutionTests
+namespace PythonCodeExecutionPythonDotNet.Tests
 
 {
     public class PythonScriptWithModulesExecutorTests
@@ -39,14 +42,48 @@ namespace PythonCodeExecutionTests
             //arrange
             var moduleName = "numpy";
 
-            var expectedOutput = 5;
-            var script = $"A = numpy.array([2,3,4,5]) {Environment.NewLine}n = A[3]";
+            var expectedOutput = 5.0;
+            var script = $"A = numpy.array([2,3,4,5]) {Environment.NewLine}n = A[3].item()";
             var underTest = GetUnderTest();
             //act
-            var realOutput = Convert.ToDouble(underTest.ExecuteScript(script, "n", moduleName));
+            var realOutput = underTest.ExecuteScript(script, "n", moduleName);
             //assert
-            realOutput.Should().Be(expectedOutput);
+            expectedOutput.Should().Be(((PyObject)realOutput).ToDouble(System.Globalization.CultureInfo.InvariantCulture));
             Cleanup();
+        }
+
+        [Fact]
+        public void ExecuteScript_should_successfully_return_numpy_types() //restricting outputs to native python types is probably fine
+        {
+            //arrange
+            var moduleName = "numpy";
+
+            var expectedOutput = new List<int> { 2,3,4,5};
+            var script = $"A = numpy.array([2,3,4,5])";
+            var underTest = GetUnderTest();
+            //act
+            object[] realOutput = underTest.ExecuteScriptDynamic(script, "A", moduleName); 
+            //assert
+            var convertedOutput = realOutput.Cast<PyObject>().ToList().Select(x =>  x.ToInt32(System.Globalization.CultureInfo.InvariantCulture)).ToList();
+            convertedOutput.Should().BeEquivalentTo(expectedOutput);
+            Cleanup();
+        }
+
+        [Fact]
+        public void ExecuteScript_should_successfully_use_pandas_dataframe()
+        {
+            //arrange
+            var moduleName = "pandas";
+            var moduleAs = "pd";
+            var expectedOutput = 5;
+            var outputName = "df";
+            var script = "d = {'col1': [1, 2], 'col2': [3, 4]}" +
+                $"{Environment.NewLine}df = pd.DataFrame(data=d)";
+            var underTest = GetUnderTest();
+            //act
+            var realOuput = underTest.ExecuteScriptDynamic(script, outputName, moduleName, moduleAs);
+
+
         }
 
         [Fact]
@@ -112,6 +149,26 @@ namespace PythonCodeExecutionTests
         }
 
         [Fact]
+        public void Should_be_able_to_get_csharp_class_as_output()
+        {
+            //arrange
+            var underTest = GetUnderTest();
+            var moduleName = "clr";
+            var outputName = "myPerson";
+            var expectedOutput = new Person("Nancy", 85);
+            //act
+            var script = $"clr.AddReference(\"ExampleLibrary\"); " +
+                $"{Environment.NewLine}from ExampleLibrary import Club;" +
+                $"{Environment.NewLine}myClub = Club()" +
+                $"{Environment.NewLine}myPerson = myClub.People[1]" +
+                $"{Environment.NewLine}myPerson.Age = 85";
+            var realOutput = (Person)underTest.ExecuteScript(script, outputName, moduleName);
+            //assert
+            realOutput.Should().BeEquivalentTo(expectedOutput);
+            Cleanup();
+        }
+
+        [Fact]
         public void Should_be_able_to_pass_in_instantiated_class_and_modify_from_python_scope()
         {
             //arrange
@@ -130,6 +187,88 @@ namespace PythonCodeExecutionTests
             realOutput.Should().Be(expectedOutput);
             inputValue.Age.Should().Be(18);
             Cleanup();
+        }
+
+        [Fact]
+        public void Can_pass_in_dictionary_convert_to_pyDict_then_to_pandas_dataFrame_and_get_back_as_dictionary()
+        {
+            //arrange
+            var underTest = GetUnderTest();
+            var moduleNames = new List<string>() { "clr", "numpy", "pandas" };
+            Dictionary<string, int[]> expectedOutput = new Dictionary<string, int[]>();
+            expectedOutput.Add("col1", new int[2] { 1, 2 });
+            expectedOutput.Add("col2", new int[2] { 3, 4 });
+            expectedOutput.Add("col3", new int[2] { 5, 6 });
+            var outputName = "outputArray"; 
+            var script = "d ={}" +
+                $"{Environment.NewLine}for k in input.keys():" + 
+                $"{Environment.NewLine} d[k]=input[k]" +    
+                $"{Environment.NewLine}df = pandas.DataFrame(data=d)" + 
+                $"{Environment.NewLine}outputArray = df.to_dict('list')";
+
+            //act
+            var output = underTest.ExecuteScriptDynamic(script, "input", expectedOutput.ToPython(), outputName, moduleNames);
+            var processedOutput = ConvertPyObjectDictionaryToStringIntArrayDictionary(output);
+            //assert
+            expectedOutput.Should().BeEquivalentTo(processedOutput);
+        }
+
+        [Fact]
+        public void Can_pass_in_dictionary_convert_to_pandas_dataFrame_and_get_back_as_dictionary() //
+        {
+            //arrange
+            var underTest = GetUnderTest();
+            var moduleNames = new List<string>() { "clr", "numpy", "pandas" };
+            Dictionary<string, int[]> expectedOutput = new Dictionary<string, int[]>();
+            expectedOutput.Add("col1", new int[2] { 1, 2 });
+            expectedOutput.Add("col2", new int[2] { 3, 4 });
+            expectedOutput.Add("col3", new int[2] { 5, 6 });
+            var bleh = expectedOutput.ToPython();
+            var outputName = "outputArray";
+            var script = "d =input" +
+                $"{Environment.NewLine}df = pandas.DataFrame(data=d)" +
+                $"{Environment.NewLine}outputArray = df.to_dict('list')";
+
+            //act
+            var output = underTest.ExecuteScriptDynamic(script, "input", expectedOutput.ToPython(), outputName, moduleNames);
+            var processedOutput = ConvertPyObjectDictionaryToStringIntArrayDictionary(output);
+            //assert
+            expectedOutput.Should().BeEquivalentTo(processedOutput);
+        }
+
+        [Fact]
+        public void Can_create_pandas_dataFrame_and_get_back_as_dictionary()
+        {
+            //arrange
+            var underTest = GetUnderTest();
+            var moduleNames = new List<string>() { "clr", "numpy", "pandas"};
+            Dictionary<string, int[]> expectedOutput = new Dictionary<string, int[]>();
+            expectedOutput.Add("col1", new int[2] { 1, 2 });
+            expectedOutput.Add("col2", new int[2] { 3, 4 });
+            expectedOutput.Add("col3", new int[2] { 5, 6 });
+            dynamic input = expectedOutput.ToPython();
+            var outputName = "outputArray";
+            var script = "d = dict([('col1',[1,2]), ('col2',[3,4]), ('col3',[5,6])])" +
+                $"{Environment.NewLine}df = pandas.DataFrame(data=d)" +
+                $"{Environment.NewLine}outputArray = df.to_dict('list')";
+
+            //act
+            var output = underTest.ExecuteScriptDynamic(script, "input", input, outputName, moduleNames);
+            var processedOutput = ConvertPyObjectDictionaryToStringIntArrayDictionary(output);
+            //assert
+            expectedOutput.Should().BeEquivalentTo(processedOutput);
+        }
+
+        private Dictionary<string, int[]> ConvertPyObjectDictionaryToStringIntArrayDictionary(Dictionary<object, object> dict)
+        {           
+            var newDict = new Dictionary<string, int[]>();
+            foreach (var key in dict.Keys)
+            {
+                var newKey = key.ToString();
+                var newValue = ((object[])dict[key]).Select(x => ((PyInt)x).ToInt32()).ToArray();
+                newDict.Add(newKey, newValue);
+            }
+            return newDict;
         }
     }
 }

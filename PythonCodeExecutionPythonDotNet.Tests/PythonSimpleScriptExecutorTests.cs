@@ -3,7 +3,7 @@ using PythonCodeExecutionPythonDotNet;
 using ExampleLibrary;
 using FluentAssertions;
 
-namespace PythonCodeExecutionTests
+namespace PythonCodeExecutionPythonDotNet.Tests
 
 {
     public class PythonSimpleScriptExecutorTests
@@ -77,7 +77,8 @@ namespace PythonCodeExecutionTests
             inputs.Add("B", 6);
 
             var outputs = new List<string> { "C", "D" };
-            var script = $"C = A+B {Environment.NewLine}D=A*B";
+            var script = $"C = A+B " +
+                $"{Environment.NewLine}D=A*B";
             var underTest = GetUnderTest();
             //act
             var realOutput = underTest.ExecuteScript(script, inputs, outputs);
@@ -101,6 +102,7 @@ namespace PythonCodeExecutionTests
                 $"{Environment.NewLine}Nancy.Age = 19" +
                 $"{Environment.NewLine}age = Nancy.Age" +
                 $"{Environment.NewLine}Nancy.Age = 18";
+            //assert
             var realOutput = Convert.ToDouble(underTest.ExecuteScript(script, inputName, inputValue, outputName));
             realOutput.Should().Be(expectedOutput);
             inputValue.Age.Should().Be(18);

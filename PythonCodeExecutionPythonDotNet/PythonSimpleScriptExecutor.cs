@@ -9,23 +9,13 @@ namespace PythonCodeExecutionPythonDotNet
         private string pythonPath1 = @"C:\Users\OliverWingYoung\AppData\Local\Programs\Python\Python38";
         private string py_interpreter = "python38.dll";
         public PythonSimpleScriptExecutor()
-        {                 
-            if (!PythonEngine.IsInitialized)
-            {
-                Runtime.PythonDLL = py_interpreter;
-                string pathToPython = pythonPath1;
-                string path = pathToPython + ";" +
-                Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Machine);
-                Environment.SetEnvironmentVariable("PATH", path, EnvironmentVariableTarget.Process);
-                Environment.SetEnvironmentVariable("PYTHONHOME", pathToPython, EnvironmentVariableTarget.Process);
-
-                PythonEngine.Initialize();
-            }                      
+        {
+            PythonEngineStarter.StartPythonEngine();
         }
 
         public void Dispose()
         {
-            PythonEngine.Shutdown();
+            PythonEngineStarter.Dispose();
         }
 
         public object ExecuteScript(string script, string outputName)
@@ -34,7 +24,7 @@ namespace PythonCodeExecutionPythonDotNet
             {
                 var scope = Py.CreateScope();
                 scope.Exec(script);
-                object output = scope.Get(outputName).ToDouble(System.Globalization.CultureInfo.InvariantCulture);
+                object output = scope.Get(outputName);
                 return output;
             }
         }
